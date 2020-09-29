@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { getClient, generators } = require('./auth');
 const cookie = require('cookie');
 
@@ -31,6 +32,7 @@ exports.handler = async (event, context) => {
             nonce,
             state: stateStr,
         });
+        console.log(authorizationUrl);
 
         return {
             statusCode: 302,

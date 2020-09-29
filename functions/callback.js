@@ -1,5 +1,6 @@
+require('dotenv').config();
 const qs = require('querystring');
-const { getClient } = require('./auth');
+const { getClient, generateNetlifyJWT } = require('./auth');
 const cookie = require('cookie');
 const jwt = require('jsonwebtoken');
 
@@ -35,27 +36,15 @@ exports.handler = async (event, context) => {
         const { id_token } = tokenSet;
         const tokenData = jwt.decode(id_token);
         //TODO: get namespace from environment variables
-        const namespace = 'https://netlify-integration.com';
-        tokenData['app_metadata'] = {
-            authorization: {
-                roles: tokenData[`${namespace}/roles`],
-            },
-        };
-        console.log(tokenData);
+        const netlifyToken = await generateNetlifyJWT(tokenData);
 
         //TODO: clear login cookie
-        //TODO: decode the token and build netlify token
-        //TODO: set cookie with netlify token
         const twoWeeks = 14 * 24 * 3600000;
-        const netlifyCookie = cookie.serialize(
-            'nf_jwt',
-            JSON.stringify(tokenData),
-            {
-                // secure: true,
-                path: '/',
-                maxAge: twoWeeks,
-            }
-        );
+        const netlifyCookie = cookie.serialize('nf_jwt', netlifyToken, {
+            // secure: true,
+            path: '/',
+            maxAge: twoWeeks,
+        });
         return {
             statusCode: 302,
             headers: {

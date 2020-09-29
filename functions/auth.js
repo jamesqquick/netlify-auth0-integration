@@ -1,6 +1,6 @@
 const { Issuer } = require('openid-client');
 const { generators } = require('openid-client');
-
+const jwt = require('jsonwebtoken');
 const getIssuer = async () => {
     //TODO: can we cache anything
     //TODO: can we create a new Issuer manually instead of calling out?
@@ -18,7 +18,19 @@ const getClient = async () => {
     });
 };
 
+const generateNetlifyJWT = async (tokenData) => {
+    const namespace = 'https://netlify-integration.com';
+    tokenData['app_metadata'] = {
+        authorization: {
+            roles: tokenData[`${namespace}/roles`],
+        },
+    };
+    const expiresIn = Math.floor(Date.now() / 1000) + 60 * 60;
+    return await jwt.sign(tokenData, 'test');
+};
+
 module.exports = {
     getClient,
     generators,
+    generateNetlifyJWT,
 };

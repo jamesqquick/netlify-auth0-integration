@@ -4,6 +4,7 @@
     "private": true,
     "dependencies": {
         "cookie": "^0.4.1",
+        "dotenv": "^8.2.0",
         "jsonwebtoken": "^8.5.1",
         "openid-client": "^4.1.1",
         "querystring": "^0.2.0"
