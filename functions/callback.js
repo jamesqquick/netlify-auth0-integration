@@ -59,7 +59,7 @@ exports.handler = async (event, context) => {
         return {
             statusCode: 302,
             headers: {
-                Location: 'https://ea5f65a88bbc.ngrok.io/',
+                Location: `${process.env.APP_DOMAIN}`,
                 'Cache-Control': 'no-cache',
                 'Set-Cookie': netlifyCookie,
             },
