@@ -60,7 +60,7 @@ exports.handler = async (event, context) => {
                 Location: `${process.env.APP_DOMAIN}`,
                 'Cache-Control': 'no-cache',
                 'Set-Cookie': netlifyCookie,
-                'Set-Cookie': auth0LoginCookie,
+                //'Set-Cookie': auth0LoginCookie,
             },
             body: JSON.stringify({ msg: `you're good` }),
         };
