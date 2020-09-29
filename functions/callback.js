@@ -1,5 +1,5 @@
 const qs = require('querystring');
-const { getClient } = require('./utils/auth');
+const { getClient } = require('./auth');
 const cookie = require('cookie');
 const jwt = require('jsonwebtoken');
 

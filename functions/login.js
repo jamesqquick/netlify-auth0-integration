@@ -1,4 +1,4 @@
-const { getClient, generators } = require('./utils/auth');
+const { getClient, generators } = require('./auth');
 const cookie = require('cookie');
 
 exports.handler = async (event, context) => {
