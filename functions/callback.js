@@ -45,12 +45,22 @@ exports.handler = async (event, context) => {
             path: '/',
             maxAge: twoWeeks,
         });
+        const auth0LoginCookie = cookie.serialize(
+            'auth0_login_cookie',
+            {},
+            {
+                // secure: true,
+                path: '/',
+                maxAge: 0,
+            }
+        );
         return {
             statusCode: 302,
             headers: {
                 Location: `${process.env.APP_DOMAIN}`,
                 'Cache-Control': 'no-cache',
                 'Set-Cookie': netlifyCookie,
+                'Set-Cookie': auth0LoginCookie,
             },
             body: JSON.stringify({ msg: `you're good` }),
         };
