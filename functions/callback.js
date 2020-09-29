@@ -54,11 +54,14 @@ exports.handler = async (event, context) => {
                 maxAge: new Date(0),
             }
         );
+        console.log(netlifyCookie, auth0LoginCookie);
         return {
             statusCode: 302,
-            multiValueHeaders: {
+            headers: {
                 Location: `${process.env.APP_DOMAIN}`,
                 'Cache-Control': 'no-cache',
+            },
+            multiValueHeaders: {
                 'Set-Cookie': [netlifyCookie, auth0LoginCookie],
             },
             body: JSON.stringify({ msg: `you're good` }),
