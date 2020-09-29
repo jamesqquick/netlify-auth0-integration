@@ -8,7 +8,9 @@
         "openid-client": "^4.1.1",
         "querystring": "^0.2.0"
     },
-    "scripts": {},
+    "scripts": {
+        "start": "echo 'dummy'"
+    },
     "eslintConfig": {
         "extends": "react-app"
     },
