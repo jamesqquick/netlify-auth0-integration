@@ -1,39 +1,21 @@
 require('dotenv').config();
-const { getClient, generators } = require('./auth');
-const cookie = require('cookie');
+const {
+    getRedirectURL,
+    generators,
+    getEncodedStateString,
+    generateAuth0LoginCookie,
+} = require('./OpenIdClientUtils');
 
 exports.handler = async (event, context) => {
-    const referrer = event.headers.referrer;
     try {
-        const client = await getClient();
+        //save the user's current route in the state
+        const referrer = event.headers.referrer;
+        const encodedStateStr = getEncodedStateString(referrer);
+
         const nonce = generators.nonce();
-        //todo: throw in a nonce property go
-        const state = { route: referrer, nonce: generators.nonce() };
-        //TODO: stringify + base 64 encode + url safe
-        const stateBuffer = Buffer.from(JSON.stringify(state));
-        const stateStr = stateBuffer.toString('base64');
-        console.log(stateStr);
-        const cookieData = { nonce, state: stateStr };
-        const tenMinutes = 10 * 60 * 1000;
-
-        const loginCookie = cookie.serialize(
-            'auth0_login_cookie',
-            JSON.stringify(cookieData),
-            {
-                // secure: true,
-                path: '/',
-                maxAge: tenMinutes,
-                // httpOnly: true,
-            }
-        );
-        const authorizationUrl = client.authorizationUrl({
-            scope: 'openid email profile',
-            response_mode: 'form_post',
-            nonce,
-            state: stateStr,
-        });
-        console.log(authorizationUrl);
-
+        const authorizationUrl = await getRedirectURL(nonce, encodedStateStr);
+        const loginCookie = generateAuth0LoginCookie(nonce, encodedStateStr);
+        console.log(loginCookie);
         return {
             statusCode: 302,
             headers: {

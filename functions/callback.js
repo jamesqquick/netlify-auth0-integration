@@ -1,6 +1,5 @@
 require('dotenv').config();
-const qs = require('querystring');
-const { getClient, generateNetlifyJWT } = require('./auth');
+const { getOpenIdClient, generateNetlifyJWT } = require('./OpenIdClientUtils');
 const cookie = require('cookie');
 const jwt = require('jsonwebtoken');
 
@@ -16,7 +15,7 @@ exports.handler = async (event, context) => {
             event.headers.cookie
         );
         const { nonce, state } = JSON.parse(loginCookie);
-        const client = await getClient();
+        const client = await getOpenIdClient();
 
         //TODO: does mocking out this request object make sense?
         const req = {
