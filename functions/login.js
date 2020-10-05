@@ -1,25 +1,30 @@
 require('dotenv').config();
-const {
-    getRedirectURL,
-    generators,
-    getEncodedStateString,
-    generateAuth0LoginCookie,
-} = require('./OpenIdClientUtils');
+const { AuthUtils } = require('./AuthUtils');
+const { generators } = require('openid-client');
 
 exports.handler = async (event, context) => {
     try {
-        //save the user's current route in the state
+        const authUtils = new AuthUtils();
+        await authUtils.initializeClient();
+
+        //TODO: is referrer the best place to get the path?
         const referrer = event.headers.referrer;
-        const encodedStateStr = getEncodedStateString(referrer);
+        const encodedStateStr = authUtils.generateEncodedStateString(referrer);
 
         const nonce = generators.nonce();
-        const authorizationUrl = await getRedirectURL(nonce, encodedStateStr);
-        const loginCookie = generateAuth0LoginCookie(nonce, encodedStateStr);
-        console.log(loginCookie);
+        const authRedirectURL = await authUtils.generateAuthRedirectURL(
+            nonce,
+            encodedStateStr
+        );
+        const loginCookie = authUtils.generateAuth0LoginCookie(
+            nonce,
+            encodedStateStr
+        );
+
         return {
             statusCode: 302,
             headers: {
-                Location: authorizationUrl,
+                Location: authRedirectURL,
                 'Cache-Control': 'no-cache',
                 'Set-Cookie': loginCookie,
             },
@@ -29,7 +34,10 @@ exports.handler = async (event, context) => {
         console.error(error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ msg: 'Something not work' }),
+            body: JSON.stringify({ msg: 'Login failed' }),
+            headers: {
+                Location: '/',
+            },
         };
     }
 };
