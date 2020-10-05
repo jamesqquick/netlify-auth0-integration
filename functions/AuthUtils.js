@@ -27,6 +27,7 @@ class AuthUtils {
                 roles: tokenData[`${process.env.AUTH0_TOKEN_NAMESPACE}/roles`],
             },
         };
+        console.log('*******' + process.env.TOKEN_SECRET + '****');
         const netlifyJWT = await jwt.sign(tokenData, process.env.TOKEN_SECRET);
         console.log(netlifyJWT);
         return netlifyJWT;
