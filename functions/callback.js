@@ -40,8 +40,9 @@ exports.handler = async (event, context) => {
             headers: {
                 Location: `/`,
                 'Cache-Control': 'no-cache',
-                'Set-Cookie': netlifyCookie,
-                'Set-Cookie': auth0LoginCookie,
+            },
+            multiValueHeaders: {
+                'Set-Cookie': [netlifyCookie, auth0LoginCookie],
             },
             body: JSON.stringify({ msg: `you're good` }),
         };
