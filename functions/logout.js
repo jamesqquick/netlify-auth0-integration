@@ -10,9 +10,7 @@ exports.handler = async (event, context) => {
             headers: {
                 Location: `/`,
                 'Cache-Control': 'no-cache',
-            },
-            multiValueHeaders: {
-                'Set-Cookie': [logoutCookie],
+                'Set-Cookie': logoutCookie,
             },
             body: JSON.stringify({ msg: `Logout successful` }),
         };
