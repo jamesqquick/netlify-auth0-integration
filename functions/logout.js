@@ -12,6 +12,7 @@ exports.handler = async (event, context) => {
         const logoutUrl = encodeUri(
             `${auth0DomainLogout}?${urlReturnTo}&${urlClientId}`
         );
+        console.log(logoutUrl);
         return {
             statusCode: 302,
             headers: {
