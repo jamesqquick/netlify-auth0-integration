@@ -8,7 +8,7 @@ exports.handler = async (event, context) => {
         return {
             statusCode: 302,
             headers: {
-                Location: `/`,
+                Location: `https://${process.env.AUTH0_DOMAIN}/v2/logout`,
                 'Cache-Control': 'no-cache',
                 'Set-Cookie': logoutCookie,
             },
