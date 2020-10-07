@@ -7,11 +7,11 @@ exports.handler = async (event, context) => {
         const logoutCookie = authUtils.generateLogoutCookie();
 
         const auth0DomainLogout = `https://${process.env.AUTH0_DOMAIN}v2/logout`;
-        const urlReturnTo = `returnTo=${process.env.APP_DOMAIN}`;
+        const urlReturnTo = `returnTo=${encodeURIComponent(
+            process.env.APP_DOMAIN
+        )}`;
         const urlClientId = `client_id=${process.env.AUTH0_CLIENT_ID}`;
-        const logoutUrl = encodeURIComponent(
-            `${auth0DomainLogout}?${urlReturnTo}&${urlClientId}`
-        );
+        const logoutUrl = `${auth0DomainLogout}?${urlReturnTo}&${urlClientId}`;
         console.log(logoutUrl);
         return {
             statusCode: 302,
