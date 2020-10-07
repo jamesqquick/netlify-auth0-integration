@@ -9,7 +9,7 @@ exports.handler = async (event, context) => {
         const auth0DomainLogout = `https://${process.env.AUTH0_DOMAIN}v2/logout`;
         const urlReturnTo = `returnTo=${process.env.APP_DOMAIN}`;
         const urlClientId = `client_id=${process.env.AUTH0_CLIENT_ID}`;
-        const logoutUrl = encodeUri(
+        const logoutUrl = encodeURIComponent(
             `${auth0DomainLogout}?${urlReturnTo}&${urlClientId}`
         );
         console.log(logoutUrl);
