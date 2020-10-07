@@ -114,6 +114,16 @@ class AuthUtils {
         const params = this.openIDClient.callbackParams(req);
         return params;
     }
+
+    generateAuth0LogoutUrl() {
+        const auth0DomainLogout = `https://${process.env.AUTH0_DOMAIN}v2/logout`;
+        const urlReturnTo = `returnTo=${encodeURIComponent(
+            process.env.APP_DOMAIN
+        )}`;
+        const urlClientId = `client_id=${process.env.AUTH0_CLIENT_ID}`;
+        const logoutUrl = `${auth0DomainLogout}?${urlReturnTo}&${urlClientId}`;
+        return logoutUrl;
+    }
 }
 
 module.exports = {
