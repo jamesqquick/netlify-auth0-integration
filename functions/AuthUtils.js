@@ -27,10 +27,7 @@ class AuthUtils {
         const exp = iat + twoWeeksInSeconds
         //copy over appropriate properties from the original token data
         const netlifyTokenData = {
-            exp,
-            iat,
-            aud: tokenData.aud,
-            sub: tokenData.sub,
+            ...tokenData,
             app_metadata: {
                 authorization: {
                     roles:
