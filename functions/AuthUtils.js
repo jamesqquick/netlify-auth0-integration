@@ -32,7 +32,6 @@ class AuthUtils {
             updated_at: iat,
             aud: tokenData.aud,
             sub: tokenData.sub,
-            iss: tokenData.iss,
             app_metadata: {
                 authorization: {
                     roles:
