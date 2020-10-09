@@ -39,9 +39,7 @@ class AuthUtils {
                 },
             },
         };
-        console.log(netlifyTokenData)
         const netlifyJWT = await jwt.sign(netlifyTokenData, process.env.TOKEN_SECRET);
-        console.log(netlifyJWT)
         return netlifyJWT;
     }
 
