@@ -1,1 +1,2 @@
 /admin/* 200! Role=admin
+/amdin/* / 401!
