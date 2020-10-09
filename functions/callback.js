@@ -29,6 +29,7 @@ exports.handler = async (event, context) => {
             }
         );
         const { id_token } = tokenSet;
+        console.log(id_token)
         const decodedToken = jwt.decode(id_token);
         const netlifyCookie = await authUtils.generateNetlifyCookieFromAuth0Token(
             decodedToken
