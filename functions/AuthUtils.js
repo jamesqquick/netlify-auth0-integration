@@ -22,12 +22,17 @@ class AuthUtils {
     }
 
     async generateNetlifyJWT(tokenData) {
-        tokenData['app_metadata'] = {
-            authorization: {
-                roles: tokenData[`${process.env.AUTH0_TOKEN_NAMESPACE}/roles`],
-            },
+        //copy over appropriate properties from the original token data
+        const netlifyTokenData = {
+            aud: tokenData.aud,
+            'app_metadata': {
+                authorization: {
+                    roles: tokenData[`${process.env.AUTH0_TOKEN_NAMESPACE}/roles`],
+                }
+            }
         };
-        const netlifyJWT = await jwt.sign(tokenData, process.env.TOKEN_SECRET);
+        console.log(netlifyTokenData)
+        const netlifyJWT = await jwt.sign(netlifyTokenData, process.env.TOKEN_SECRET);
         return netlifyJWT;
     }
 
