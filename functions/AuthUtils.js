@@ -22,13 +22,14 @@ class AuthUtils {
     }
 
     async generateNetlifyJWT(tokenData) {
-        const iat = Date.now()/1000
+        const iat = Math.floor(Date.now()/1000);
         const twoWeeksInSeconds = 14 * 24 * 3600;
-        const exp = iat + twoWeeksInSeconds
+        const exp = Math.floor(iat + twoWeeksInSeconds);
         //copy over appropriate properties from the original token data
         const netlifyTokenData = {
             exp,
             iat,
+            updated_at: iat,
             aud: tokenData.aud,
             sub: tokenData.sub,
             iss: tokenData.iss,
