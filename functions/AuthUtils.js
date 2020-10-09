@@ -22,18 +22,21 @@ class AuthUtils {
     }
 
     async generateNetlifyJWT(tokenData) {
-        const twoWeeks = 14 * 24 * 3600000;
-
+        const twoWeeksInSeconds = 14 * 24 * 3600;
+        const issuedAtInSeconds = Date.now()/1000
+        const exp = issuedAtInSeconds + twoWeeksInSeconds
         //copy over appropriate properties from the original token data
         const netlifyTokenData = {
             aud: tokenData.aud,
-            exp: twoWeeks,
-            sub: tokenData.sub,
-            'app_metadata': {
+            exp,
+            sub: issuedAtInSeconds,
+            iat: Date.now(),
+            app_metadata: {
                 authorization: {
-                    roles: tokenData[`${process.env.AUTH0_TOKEN_NAMESPACE}/roles`],
-                }
-            }
+                    roles:
+                        tokenData[`${process.env.AUTH0_TOKEN_NAMESPACE}/roles`],
+                },
+            },
         };
         console.log(netlifyTokenData)
         const netlifyJWT = await jwt.sign(netlifyTokenData, process.env.TOKEN_SECRET);
