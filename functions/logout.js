@@ -1,20 +1,9 @@
 require('dotenv').config();
-const { AuthUtils } = require('./AuthUtils');
+const { handleLogout } = require('./AuthUtils');
 
 exports.handler = async (event, context) => {
     try {
-        const authUtils = new AuthUtils();
-        const logoutCookie = authUtils.generateLogoutCookie();
-        const logoutUrl = authUtils.generateAuth0LogoutUrl();
-        return {
-            statusCode: 302,
-            headers: {
-                Location: logoutUrl,
-                'Cache-Control': 'no-cache',
-                'Set-Cookie': logoutCookie,
-            },
-            body: JSON.stringify({ msg: `Logout successful` }),
-        };
+        return handleLogout();
     } catch (err) {
         console.error(err);
         return {
