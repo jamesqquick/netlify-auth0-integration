@@ -3,89 +3,6 @@ const { generators } = require('openid-client');
 const jwt = require('jsonwebtoken');
 const cookie = require('cookie');
 
-const handleLogin = async (event) => {
-    const openIDClient = await getOpenIDClient();
-    const referrer = event.headers.referrer;
-    const encodedStateStr = generateEncodedStateString(referrer);
-    const nonce = generators.nonce();
-    const authRedirectURL = await generateAuthRedirectURL(
-        openIDClient,
-        nonce,
-        encodedStateStr
-    );
-    const loginCookie = generateAuth0LoginCookie(nonce, encodedStateStr);
-    return {
-        statusCode: 302,
-        headers: {
-            Location: authRedirectURL,
-            'Cache-Control': 'no-cache',
-            'Set-Cookie': loginCookie,
-        },
-        body: '',
-    };
-};
-
-const handleCallback = async (event) => {
-    const openIDClient = await getOpenIDClient();
-    if (!event) {
-        throw new Error('Event is not available');
-    }
-
-    if (!event.headers.cookie) {
-        throw new Error(
-            'No login cookie present for tracking nonce and state.'
-        );
-    }
-
-    const { auth0_login_cookie: loginCookie } = cookie.parse(
-        event.headers.cookie
-    );
-    const { nonce, state } = JSON.parse(loginCookie);
-
-    const params = getCallbackParams(openIDClient, event);
-
-    const tokenSet = await openIDClient.callback(
-        `${process.env.APP_DOMAIN}/.netlify/functions/callback`,
-        params,
-        {
-            nonce,
-            state,
-        }
-    );
-    const { id_token } = tokenSet;
-    const decodedToken = jwt.decode(id_token);
-    const netlifyCookie = await generateNetlifyCookieFromAuth0Token(
-        decodedToken
-    );
-
-    const auth0LoginCookie = generateAuth0LoginCookieReset();
-    return {
-        statusCode: 302,
-        headers: {
-            Location: `/`,
-            'Cache-Control': 'no-cache',
-        },
-        multiValueHeaders: {
-            'Set-Cookie': [netlifyCookie, auth0LoginCookie],
-        },
-        body: JSON.stringify({ msg: `Login handled correctly` }),
-    };
-};
-
-const handleLogout = async (event) => {
-    const logoutCookie = generateLogoutCookie();
-    const logoutUrl = generateAuth0LogoutUrl();
-    return {
-        statusCode: 302,
-        headers: {
-            Location: logoutUrl,
-            'Cache-Control': 'no-cache',
-            'Set-Cookie': logoutCookie,
-        },
-        body: JSON.stringify({ msg: `Logout successful` }),
-    };
-};
-
 const getOpenIDClient = async () => {
     const issuer = await Issuer.discover(`https://${process.env.AUTH0_DOMAIN}`);
     const openIDClient = new issuer.Client({
@@ -218,6 +135,89 @@ const generateAuth0LogoutUrl = () => {
     const urlClientId = `client_id=${process.env.AUTH0_CLIENT_ID}`;
     const logoutUrl = `${auth0DomainLogout}?${urlReturnTo}&${urlClientId}`;
     return logoutUrl;
+};
+
+const handleLogin = async (event) => {
+    const openIDClient = await getOpenIDClient();
+    const referrer = event.headers.referrer;
+    const encodedStateStr = generateEncodedStateString(referrer);
+    const nonce = generators.nonce();
+    const authRedirectURL = await generateAuthRedirectURL(
+        openIDClient,
+        nonce,
+        encodedStateStr
+    );
+    const loginCookie = generateAuth0LoginCookie(nonce, encodedStateStr);
+    return {
+        statusCode: 302,
+        headers: {
+            Location: authRedirectURL,
+            'Cache-Control': 'no-cache',
+            'Set-Cookie': loginCookie,
+        },
+        body: '',
+    };
+};
+
+const handleCallback = async (event) => {
+    const openIDClient = await getOpenIDClient();
+    if (!event) {
+        throw new Error('Event is not available');
+    }
+
+    if (!event.headers.cookie) {
+        throw new Error(
+            'No login cookie present for tracking nonce and state.'
+        );
+    }
+
+    const { auth0_login_cookie: loginCookie } = cookie.parse(
+        event.headers.cookie
+    );
+    const { nonce, state } = JSON.parse(loginCookie);
+
+    const params = getCallbackParams(openIDClient, event);
+
+    const tokenSet = await openIDClient.callback(
+        `${process.env.APP_DOMAIN}/.netlify/functions/callback`,
+        params,
+        {
+            nonce,
+            state,
+        }
+    );
+    const { id_token } = tokenSet;
+    const decodedToken = jwt.decode(id_token);
+    const netlifyCookie = await generateNetlifyCookieFromAuth0Token(
+        decodedToken
+    );
+
+    const auth0LoginCookie = generateAuth0LoginCookieReset();
+    return {
+        statusCode: 302,
+        headers: {
+            Location: `/`,
+            'Cache-Control': 'no-cache',
+        },
+        multiValueHeaders: {
+            'Set-Cookie': [netlifyCookie, auth0LoginCookie],
+        },
+        body: JSON.stringify({ msg: `Login handled correctly` }),
+    };
+};
+
+const handleLogout = async (event) => {
+    const logoutCookie = generateLogoutCookie();
+    const logoutUrl = generateAuth0LogoutUrl();
+    return {
+        statusCode: 302,
+        headers: {
+            Location: logoutUrl,
+            'Cache-Control': 'no-cache',
+            'Set-Cookie': logoutCookie,
+        },
+        body: JSON.stringify({ msg: `Logout successful` }),
+    };
 };
 
 module.exports = {
